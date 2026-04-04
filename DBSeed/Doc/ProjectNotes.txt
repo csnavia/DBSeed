@@ -1,0 +1,24 @@
+﻿1. Create appsettings.json
+2. Create appsettings.Development.json, appsettings.Test.json, appsettings.Staging.json
+3. Make sure appsettings.xxx.json files are child of appsettings.json
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ToDo
+1. Remove the password from the dev appsettings.Development.json file
