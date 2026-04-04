@@ -21,17 +21,73 @@ Console.WriteLine($"Destination Connection: {destinationConnection}");
 Console.WriteLine();
 
 // Display users from source database
-DisplayUsers(sourceConnection);
+//DisplayUsers(sourceConnection);
 
-AddUser(new UserModel
-{
-    FirstName = "Bob",
-    LastName = "Smith",
-    Age = 30
-}, sourceConnection);
+//AddUser(new UserModel
+//{
+//    FirstName = "Bob",
+//    LastName = "Smith",
+//    Age = 30
+//}, sourceConnection);
+
+DisplayUsersLessThanAge(59, sourceConnection);
+
 
 Console.ReadKey();
 
+
+
+static void DisplayUsersLessThanAge(int age, string? connectionString)
+{
+    if (string.IsNullOrEmpty(connectionString))
+    {
+        Console.WriteLine("Connection string is not configured.");
+        return;
+    }
+
+    try
+    {
+        using var connection = new SqlConnection(connectionString);
+        connection.Open();
+
+        // Create command to call stored procedure
+        using var command = new SqlCommand("GetUsersLessThanAge", connection);
+        command.CommandType = System.Data.CommandType.StoredProcedure;
+
+        // Add age parameter
+        command.Parameters.AddWithValue("@Age", age);
+
+        // Execute stored procedure and read results
+        using var reader = command.ExecuteReader();
+
+        Console.WriteLine($"Users less than {age} years old:");
+        Console.WriteLine("".PadRight(70, '-'));
+        Console.WriteLine($"{"ID",-10} {"FirstName",-25} {"LastName",-25} {"Age",-5}");
+        Console.WriteLine("".PadRight(70, '-'));
+
+        if (!reader.HasRows)
+        {             
+            Console.WriteLine("No users found.");
+        }
+        else
+        {
+            while (reader.Read())
+            {
+                var id = reader.GetInt32(reader.GetOrdinal("ID"));
+                var firstName = reader.IsDBNull(reader.GetOrdinal("FirstName")) ? "" : reader.GetString(reader.GetOrdinal("FirstName"));
+                var lastName = reader.IsDBNull(reader.GetOrdinal("LastName")) ? "" : reader.GetString(reader.GetOrdinal("LastName"));
+                var userAge = reader.IsDBNull(reader.GetOrdinal("Age")) ? 0 : reader.GetInt32(reader.GetOrdinal("Age"));
+
+                Console.WriteLine($"{id,-10} {firstName,-25} {lastName,-25} {userAge,-5}");
+            }
+        }
+        Console.WriteLine("".PadRight(70, '-'));
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error getting users: {ex.Message}");
+    }
+}
 
 
 static void AddUser(UserModel user, string? connectionString)
