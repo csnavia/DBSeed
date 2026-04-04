@@ -35,7 +35,32 @@ DisplayUsersLessThanAge(59, sourceConnection);
 
 Console.ReadKey();
 
+static string NormalizeAccents(string value)
+{
+    if (string.IsNullOrEmpty(value))
+        return value;
 
+    // Normalize to FormD (decomposed form) - separates base characters from diacritics
+    var normalizedString = value.Normalize(System.Text.NormalizationForm.FormD);
+
+    // Use StringBuilder to build result without diacritics
+    var stringBuilder = new System.Text.StringBuilder();
+
+    foreach (var c in normalizedString)
+    {
+        // Get the Unicode category of the character
+        var unicodeCategory = System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c);
+
+        // Only add characters that are not non-spacing marks (accents/diacritics)
+        if (unicodeCategory != System.Globalization.UnicodeCategory.NonSpacingMark)
+        {
+            stringBuilder.Append(c);
+        }
+    }
+
+    // Normalize back to FormC (composed form)
+    return stringBuilder.ToString().Normalize(System.Text.NormalizationForm.FormC);
+}
 
 static void DisplayUsersLessThanAge(int age, string? connectionString)
 {
@@ -78,7 +103,7 @@ static void DisplayUsersLessThanAge(int age, string? connectionString)
                 var lastName = reader.IsDBNull(reader.GetOrdinal("LastName")) ? "" : reader.GetString(reader.GetOrdinal("LastName"));
                 var userAge = reader.IsDBNull(reader.GetOrdinal("Age")) ? 0 : reader.GetInt32(reader.GetOrdinal("Age"));
 
-                Console.WriteLine($"{id,-10} {firstName,-25} {lastName,-25} {userAge,-5}");
+                Console.WriteLine($"{id,-10} {NormalizeAccents(firstName),-25} {NormalizeAccents(lastName),-25} {userAge,-5}");
             }
         }
         Console.WriteLine("".PadRight(70, '-'));
