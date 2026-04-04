@@ -15,11 +15,16 @@ var sourceConnection = configuration.GetConnectionString("SourceConnection");
 var destinationConnection = configuration.GetConnectionString("DestinationConnection");
 var environmentLabel = configuration["EnvironmentLabel"];
 
+
+var outputFile = configuration["OutputFile"];
+
 Console.WriteLine($"Environment: {Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? "Production"}");
 Console.WriteLine($"Environment Label: {environmentLabel}");        
 Console.WriteLine($"Source Connection: {sourceConnection}");
 Console.WriteLine($"Destination Connection: {destinationConnection}");
 Console.WriteLine();
+
+
 
 // Display users from source database
 //DisplayUsers(sourceConnection);
@@ -39,7 +44,9 @@ Console.WriteLine();
 
 //DisplayEmailStatus(sourceConnection);
 
-DisplayUsersFromList(sourceConnection);
+//DisplayUsersFromList(sourceConnection);
+
+WriteRecordsWithNonAlphanumericCharactersToFile(sourceConnection, outputFile);
 
 static void DisplayEmailStatus(string? connectionString)
 {
@@ -146,6 +153,85 @@ static void ListRecordsWithNonAlphanumericCharacters(string? connectionString)
         Console.WriteLine($"Error reading from database: {ex.Message}");
     }
 }
+
+static void WriteRecordsWithNonAlphanumericCharactersToFile(string? connectionString, string? outputFile)
+{
+    if (string.IsNullOrEmpty(connectionString))
+    {
+        Console.WriteLine("Connection string is not configured.");
+        return;
+    }
+    if (string.IsNullOrEmpty(outputFile))
+    {
+        Console.WriteLine("Output file is not configured.");
+        return;
+    }
+    try
+    {
+        using var connection = new SqlConnection(connectionString);
+        connection.Open();
+        var command = new SqlCommand("SELECT ID, FirstName, LastName FROM User1", connection);
+        using var reader = command.ExecuteReader();
+
+        // Create StreamWriter to write to file
+        using var writer = new StreamWriter(outputFile, true); // false = overwrite file
+
+        var header = "Users with non-alphanumeric characters in their names:";
+        var separator = "".PadRight(70, '-');
+        var columnHeader = $"{"ID",-10} {"FirstName",-25} {"LastName",-25}";
+
+        // Write to console
+        Console.WriteLine(header);
+        Console.WriteLine(separator);
+        Console.WriteLine(columnHeader);
+        Console.WriteLine(separator);
+
+        // Write to file
+        writer.WriteLine(header);
+        writer.WriteLine(separator);
+        writer.WriteLine(columnHeader);
+        writer.WriteLine(separator);
+
+        int count = 0;
+        while (reader.Read())
+        {
+            var id = reader.GetInt32(reader.GetOrdinal("ID"));
+            var firstName = reader.IsDBNull(reader.GetOrdinal("FirstName")) ? "" : reader.GetString(reader.GetOrdinal("FirstName"));
+            var lastName = reader.IsDBNull(reader.GetOrdinal("LastName")) ? "" : reader.GetString(reader.GetOrdinal("LastName"));
+            if (ContainsNonAlphanumeric(firstName) || ContainsNonAlphanumeric(lastName))
+            {
+                var recordLine = $"{id,-10} {firstName,-25} {lastName,-25}";
+
+                // Write to console
+                Console.WriteLine(recordLine);
+
+                // Write to file
+                writer.WriteLine(recordLine);
+
+                count++;
+            }
+        }
+
+        var resultMessage = count == 0 
+            ? "No users found with non-alphanumeric characters in their names." 
+            : $"Total records found: {count}";
+
+        // Write to console
+        Console.WriteLine(separator);
+        Console.WriteLine(resultMessage);
+
+        // Write to file
+        writer.WriteLine(separator);
+        writer.WriteLine(resultMessage);
+
+        Console.WriteLine($"Results written to: {outputFile}");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error reading from database: {ex.Message}");
+    }
+}
+
 
 static bool ContainsNonAlphanumeric(string value)
 {
