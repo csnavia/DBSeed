@@ -176,76 +176,103 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
 
                     if (count == 0)
                     {
-                        var insertCommand = new SqlCommand(
-                            """
-                            INSERT INTO dbo.tUser 
-                            (
-                              SubscriberID, 
-                              UserNum, 
-                              UserRoleID, 
-                              FirstName, 
-                              MiddleInitial, 
-                              LastName, 
-                              Generation, 
-                              Salutation, 
-                              Birthdate, 
-                              LanguageCode, 
-                              EmailAddress, 
-                              Phone, 
-                              Phone2, 
-                              Phone3, 
-                              Fax, 
-                              CompanyRole, 
-                              Title,
-                              CompanyNum
-                            )
-                            VALUES 
-                            (
-                              @SubscriberID, 
-                              @UserNum, 
-                              @UserRoleID, 
-                              @FirstName, 
-                              @MiddleInitial, 
-                              @LastName, 
-                              @Generation, 
-                              @Salutation, 
-                              @Birthdate, 
-                              @LanguageCode, 
-                              @EmailAddress, 
-                              @Phone, 
-                              @Phone2, 
-                              @Phone3, 
-                              @Fax, 
-                              @CompanyRole, 
-                              @Title,
-                              @CompanyNum
-                            )
-                            """,
-                            connection);
-                        insertCommand.Parameters.AddWithValue("@SubscriberID", user.SubscriberID);
-                        insertCommand.Parameters.AddWithValue("@UserNum", user.UserNum);
-                        insertCommand.Parameters.AddWithValue("@UserRoleID", user.UserRoleID);
-                        insertCommand.Parameters.AddWithValue("@FirstName", user.FirstName);
-                        insertCommand.Parameters.AddWithValue("@MiddleInitial", user.MiddleInitial);
-                        insertCommand.Parameters.AddWithValue("@LastName", user.LastName);
-                        insertCommand.Parameters.AddWithValue("@Generation", user.Generation);
-                        insertCommand.Parameters.AddWithValue("@Salutation", user.Salutation);
-                        insertCommand.Parameters.AddWithValue("@Birthdate", user.Birthdate);
-                        insertCommand.Parameters.AddWithValue("@LanguageCode", user.LanguageCode);
-                        insertCommand.Parameters.AddWithValue("@EmailAddress", user.EmailAddress);
-                        insertCommand.Parameters.AddWithValue("@Phone", user.Phone);
-                        insertCommand.Parameters.AddWithValue("@Phone2", user.Phone2);
-                        insertCommand.Parameters.AddWithValue("@Phone3", user.Phone3);
-                        insertCommand.Parameters.AddWithValue("@Fax", user.Fax);
-                        insertCommand.Parameters.AddWithValue("@CompanyRole", user.CompanyRole);
-                        insertCommand.Parameters.AddWithValue("@Title", user.Title);
-                        insertCommand.Parameters.AddWithValue("@CompanyNum", user.CompanyNum);
+                        // Begin transaction to ensure both inserts succeed or both fail
+                        using var transaction = connection.BeginTransaction();
+                        try
+                        {
+                            var insertCommand = new SqlCommand(
+                                """
+                                INSERT INTO dbo.tUser 
+                                (
+                                  SubscriberID, 
+                                  UserNum, 
+                                  UserRoleID, 
+                                  FirstName, 
+                                  MiddleInitial, 
+                                  LastName, 
+                                  Generation, 
+                                  Salutation, 
+                                  Birthdate, 
+                                  LanguageCode, 
+                                  EmailAddress, 
+                                  Phone, 
+                                  Phone2, 
+                                  Phone3, 
+                                  Fax, 
+                                  CompanyRole, 
+                                  Title,
+                                  CompanyNum
+                                )
+                                VALUES 
+                                (
+                                  @SubscriberID, 
+                                  @UserNum, 
+                                  @UserRoleID, 
+                                  @FirstName, 
+                                  @MiddleInitial, 
+                                  @LastName, 
+                                  @Generation, 
+                                  @Salutation, 
+                                  @Birthdate, 
+                                  @LanguageCode, 
+                                  @EmailAddress, 
+                                  @Phone, 
+                                  @Phone2, 
+                                  @Phone3, 
+                                  @Fax, 
+                                  @CompanyRole, 
+                                  @Title,
+                                  @CompanyNum
+                                )
+                                """,
+                                connection,
+                                transaction);
+                            insertCommand.Parameters.AddWithValue("@SubscriberID", user.SubscriberID);
+                            insertCommand.Parameters.AddWithValue("@UserNum", user.UserNum);
+                            insertCommand.Parameters.AddWithValue("@UserRoleID", user.UserRoleID);
+                            insertCommand.Parameters.AddWithValue("@FirstName", user.FirstName);
+                            insertCommand.Parameters.AddWithValue("@MiddleInitial", user.MiddleInitial);
+                            insertCommand.Parameters.AddWithValue("@LastName", user.LastName);
+                            insertCommand.Parameters.AddWithValue("@Generation", user.Generation);
+                            insertCommand.Parameters.AddWithValue("@Salutation", user.Salutation);
+                            insertCommand.Parameters.AddWithValue("@Birthdate", user.Birthdate);
+                            insertCommand.Parameters.AddWithValue("@LanguageCode", user.LanguageCode);
+                            insertCommand.Parameters.AddWithValue("@EmailAddress", user.EmailAddress);
+                            insertCommand.Parameters.AddWithValue("@Phone", user.Phone);
+                            insertCommand.Parameters.AddWithValue("@Phone2", user.Phone2);
+                            insertCommand.Parameters.AddWithValue("@Phone3", user.Phone3);
+                            insertCommand.Parameters.AddWithValue("@Fax", user.Fax);
+                            insertCommand.Parameters.AddWithValue("@CompanyRole", user.CompanyRole);
+                            insertCommand.Parameters.AddWithValue("@Title", user.Title);
+                            insertCommand.Parameters.AddWithValue("@CompanyNum", user.CompanyNum);
 
-                        var rowsAffected = insertCommand.ExecuteNonQuery();
-                        var insertMessage = $"   --> UserNum {user.UserNum} inserted successfully. Rows affected: {rowsAffected}";
-                        Console.WriteLine(insertMessage);
-                        logWriter.WriteLine(insertMessage);
-                        insertedCount++;
+                            var rowsAffected = insertCommand.ExecuteNonQuery();
+
+                            // Insert into sub8000.tUser8000 table
+                            var insertUser8000Command = new SqlCommand(
+                                "INSERT INTO sub8000.tUser8000 (SubscriberID, UserNum) VALUES (@SubscriberID, @UserNum)",
+                                connection,
+                                transaction);
+                            insertUser8000Command.Parameters.AddWithValue("@SubscriberID", user.SubscriberID);
+                            insertUser8000Command.Parameters.AddWithValue("@UserNum", user.UserNum);
+                            insertUser8000Command.ExecuteNonQuery();
+
+                            // Commit transaction if both inserts succeeded
+                            transaction.Commit();
+
+                            var insertMessage = $"   --> UserNum {user.UserNum} inserted successfully. Rows affected: {rowsAffected}";
+                            Console.WriteLine(insertMessage);
+                            logWriter.WriteLine(insertMessage);
+                            insertedCount++;
+                        }
+                        catch (Exception ex)
+                        {
+                            // Rollback transaction if either insert failed
+                            transaction.Rollback();
+                            var errorMessage = $"   --> UserNum {user.UserNum} insert failed. Transaction rolled back. Error: {ex.Message}";
+                            Console.WriteLine(errorMessage);
+                            logWriter.WriteLine(errorMessage);
+                        }
                     }
                     else
                     {
