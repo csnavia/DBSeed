@@ -182,6 +182,7 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
 
                     if (count == 0)
                     {
+                        string userName = $"{user.SubscriberID}-{user.UserNum}";
                         // Begin transaction to ensure both inserts succeed or both fail
                         using var transaction = connection.BeginTransaction();
                         try
@@ -192,6 +193,7 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
                                 (
                                   SubscriberID, 
                                   UserNum, 
+                                  UserName,
                                   UserRoleID, 
                                   FirstName, 
                                   MiddleInitial, 
@@ -212,7 +214,8 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
                                 VALUES 
                                 (
                                   @SubscriberID, 
-                                  @UserNum, 
+                                  @UserNum,
+                                  @UserName,
                                   @UserRoleID, 
                                   @FirstName, 
                                   @MiddleInitial, 
@@ -235,13 +238,14 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
                                 transaction);
                             insertCommand.Parameters.AddWithValue("@SubscriberID", user.SubscriberID);
                             insertCommand.Parameters.AddWithValue("@UserNum", user.UserNum);
+                            insertCommand.Parameters.AddWithValue("@UserName", userName);
                             insertCommand.Parameters.AddWithValue("@UserRoleID", user.UserRoleID);
                             insertCommand.Parameters.AddWithValue("@FirstName", user.FirstName);
                             insertCommand.Parameters.AddWithValue("@MiddleInitial", user.MiddleInitial);
                             insertCommand.Parameters.AddWithValue("@LastName", user.LastName);
                             insertCommand.Parameters.AddWithValue("@Generation", user.Generation);
                             insertCommand.Parameters.AddWithValue("@Salutation", user.Salutation);
-                            insertCommand.Parameters.AddWithValue("@Birthdate", user.Birthdate);
+                            insertCommand.Parameters.AddWithValue("@Birthdate", (object?)user.Birthdate ?? DBNull.Value);
                             insertCommand.Parameters.AddWithValue("@LanguageCode", user.LanguageCode);
                             insertCommand.Parameters.AddWithValue("@EmailAddress", user.EmailAddress);
                             insertCommand.Parameters.AddWithValue("@Phone", user.Phone);
@@ -517,7 +521,6 @@ static void UpdateContactsVision(string? inputFile, string? connectionString, st
                         updateCommand.Parameters.AddWithValue("@LastName", user.LastName);
                         updateCommand.Parameters.AddWithValue("@Generation", user.Generation);
                         updateCommand.Parameters.AddWithValue("@Salutation", user.Salutation);
-                        //updateCommand.Parameters.AddWithValue("@Birthdate", user.Birthdate);
                         updateCommand.Parameters.AddWithValue("@Birthdate", (object?)user.Birthdate ?? DBNull.Value);
                         updateCommand.Parameters.AddWithValue("@LanguageCode", user.LanguageCode);
                         updateCommand.Parameters.AddWithValue("@EmailAddress", user.EmailAddress);
