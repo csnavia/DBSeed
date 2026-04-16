@@ -38,7 +38,7 @@ Console.WriteLine();
 
 UpdateContactsVision(updateInputFile, sourceConnection, updateContactLog, updateStartLine, performUpdate: performUpdate);
 
-CreateContactsVision(createInputFile, sourceConnection, createContactLog, createStartLine, performUpdate: performUpdate);
+//CreateContactsVision(createInputFile, sourceConnection, createContactLog, createStartLine, performUpdate: performUpdate);
 
 Console.ReadKey();
 
@@ -517,7 +517,8 @@ static void UpdateContactsVision(string? inputFile, string? connectionString, st
                         updateCommand.Parameters.AddWithValue("@LastName", user.LastName);
                         updateCommand.Parameters.AddWithValue("@Generation", user.Generation);
                         updateCommand.Parameters.AddWithValue("@Salutation", user.Salutation);
-                        updateCommand.Parameters.AddWithValue("@Birthdate", user.Birthdate);
+                        //updateCommand.Parameters.AddWithValue("@Birthdate", user.Birthdate);
+                        updateCommand.Parameters.AddWithValue("@Birthdate", (object?)user.Birthdate ?? DBNull.Value);
                         updateCommand.Parameters.AddWithValue("@LanguageCode", user.LanguageCode);
                         updateCommand.Parameters.AddWithValue("@EmailAddress", user.EmailAddress);
                         updateCommand.Parameters.AddWithValue("@Phone", user.Phone);
