@@ -162,6 +162,33 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
                     continue;
                 }
 
+                // Retrieve AddressGUID from dbo.tAddress (required for all records)
+                var addressCommand = new SqlCommand(
+                    """
+                      SELECT 
+                        AddressGUID 
+                      FROM 
+                        dbo.tAddress 
+                      WHERE 
+                        SubscriberID = @SubscriberID AND 
+                        CompanyNum = @CompanyNum AND 
+                        AddressClass = @AddressClass                    
+                    """,
+                    connection);
+                addressCommand.Parameters.AddWithValue("@SubscriberID", 8000);
+                addressCommand.Parameters.AddWithValue("@CompanyNum", companyNum);
+                addressCommand.Parameters.AddWithValue("@AddressClass", "MAIL");
+
+                var result = addressCommand.ExecuteScalar();
+                if (result == null || result == DBNull.Value)
+                {
+                    var noAddressMessage = $"Line {lineNumber}: Skipped - AddressGUID not found for CompanyNum '{companyNum}' with AddressClass 'MAIL'";
+                    Console.WriteLine(noAddressMessage);
+                    logWriter.WriteLine(noAddressMessage);
+                    continue;
+                }
+                Guid workAddressGUID = (Guid)result;
+
                 // Get the next UserNum from the sequence only when actually inserting
                 int userNum = 0;
                 if (performUpdate)
@@ -239,7 +266,8 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
                                   CompanyRole, 
                                   Title,
                                   CompanyNum,
-                                  Active
+                                  Active,
+                                  WorkAddressGUID
                                 )
                                 VALUES 
                                 (
@@ -262,7 +290,8 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
                                   @CompanyRole, 
                                   @Title,
                                   @CompanyNum,
-                                  @Active
+                                  @Active,
+                                  @WorkAddressGUID
                                 )
                                 """,
                                 connection,
@@ -287,6 +316,7 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
                             insertCommand.Parameters.AddWithValue("@Title", user.Title);
                             insertCommand.Parameters.AddWithValue("@CompanyNum", user.CompanyNum);
                             insertCommand.Parameters.AddWithValue("@Active", 1);
+                            insertCommand.Parameters.AddWithValue("@WorkAddressGUID", workAddressGUID);
 
                             var rowsAffected = insertCommand.ExecuteNonQuery();
 
