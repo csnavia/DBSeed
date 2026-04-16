@@ -18,7 +18,8 @@ var environmentLabel = configuration["EnvironmentLabel"];
 var createInputFile = configuration["CreateInputFile"];
 var updateInputFile = configuration["UpdateInputFile"];
 var performUpdate = bool.Parse(configuration["UpdateDatabase"] ?? "false");
-
+var createStartLine = int.Parse(configuration["CreateStartLine"] ?? "1");
+var updateStartLine = int.Parse(configuration["UpdateStartLine"] ?? "1");
 
 var createContactLog = configuration["CreateContactLog"];
 var updateContactLog = configuration["UpdateContactLog"];
@@ -34,15 +35,15 @@ Console.WriteLine();
 
 
 
-UpdateContactsVision(updateInputFile, sourceConnection, updateContactLog, performUpdate: performUpdate);
+UpdateContactsVision(updateInputFile, sourceConnection, updateContactLog, updateStartLine, performUpdate: performUpdate);
 
-CreateContactsVision(updateInputFile, sourceConnection, createContactLog, performUpdate: performUpdate);
+CreateContactsVision(createInputFile, sourceConnection, createContactLog, createStartLine, performUpdate: performUpdate);
 
 Console.ReadKey();
 
 
 
-static void CreateContactsVision(string? inputFile, string? connectionString, string? logFile, bool performUpdate = false)
+static void CreateContactsVision(string? inputFile, string? connectionString, string? logFile, int startLine = 1, bool performUpdate = false)
 {
     if (string.IsNullOrEmpty(inputFile))
     {
@@ -95,6 +96,10 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
         while ((line = reader.ReadLine()) != null)
         {
             lineNumber++;
+
+            // Skip lines before the start line (e.g., header rows)
+            if (lineNumber < startLine)
+                continue;
 
             // Skip empty lines
             if (string.IsNullOrWhiteSpace(line))
@@ -338,7 +343,7 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
 }
 
 
-static void UpdateContactsVision(string? inputFile, string? connectionString, string? logFile, bool performUpdate = false)
+static void UpdateContactsVision(string? inputFile, string? connectionString, string? logFile, int startLine = 1, bool performUpdate = false)
 {
     if (string.IsNullOrEmpty(inputFile))
     {
@@ -391,6 +396,10 @@ static void UpdateContactsVision(string? inputFile, string? connectionString, st
         while ((line = reader.ReadLine()) != null)
         {
             lineNumber++;
+
+            // Skip lines before the start line (e.g., header rows)
+            if (lineNumber < startLine)
+                continue;
 
             // Skip empty lines
             if (string.IsNullOrWhiteSpace(line))
