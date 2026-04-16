@@ -42,6 +42,21 @@ UpdateContactsVision(updateInputFile, sourceConnection, updateContactLog, update
 
 Console.ReadKey();
 
+// Helper method to convert empty strings to null
+static string? GetNullableString(string value)
+{
+    var trimmed = value.Trim();
+    return string.IsNullOrWhiteSpace(trimmed) ? null : trimmed;
+}
+
+// Helper method to parse nullable int
+static int? GetNullableInt(string value)
+{
+    var trimmed = value.Trim();
+    if (string.IsNullOrWhiteSpace(trimmed))
+        return null;
+    return int.TryParse(trimmed, out int result) ? result : null;
+}
 
 
 static void CreateContactsVision(string? inputFile, string? connectionString, string? logFile, int startLine = 1, bool performUpdate = false)
@@ -49,6 +64,11 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
     if (string.IsNullOrEmpty(inputFile))
     {
         Console.WriteLine("Input file is not configured.");
+        return;
+    }
+    if (!File.Exists(inputFile))
+    {
+        Console.WriteLine($"Input file not found: {inputFile}");
         return;
     }
     if (string.IsNullOrEmpty(connectionString))
@@ -133,6 +153,15 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
                     }
                 }
 
+                // Validate CompanyNum is a valid integer > 0
+                if (!int.TryParse(values[17].Trim(), out int companyNum) || companyNum <= 0)
+                {
+                    var invalidCompanyNumMessage = $"Line {lineNumber}: Skipped - CompanyNum '{values[17].Trim()}' must be a valid integer greater than 0";
+                    Console.WriteLine(invalidCompanyNumMessage);
+                    logWriter.WriteLine(invalidCompanyNumMessage);
+                    continue;
+                }
+
                 // Get the next UserNum from the sequence only when actually inserting
                 int userNum = 0;
                 if (performUpdate)
@@ -146,22 +175,22 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
                 {
                     SubscriberID = 8000,
                     UserNum = userNum,  // Set from sequence if performUpdate is true, otherwise 0
-                    UserRoleID = int.Parse(values[2].Trim()),
-                    FirstName = values[3].Trim(),
-                    MiddleInitial = values[4].Trim(),
-                    LastName = values[5].Trim(),
-                    Generation = values[6].Trim(),
-                    Salutation = values[7].Trim(),
+                    UserRoleID = GetNullableInt(values[2]),
+                    FirstName = GetNullableString(values[3]),
+                    MiddleInitial = GetNullableString(values[4]),
+                    LastName = GetNullableString(values[5]),
+                    Generation = GetNullableString(values[6]),
+                    Salutation = GetNullableString(values[7]),
                     Birthdate = values[8].IsNullOrEmpty() ? null : DateTime.Parse(values[8].Trim()),
-                    LanguageCode = values[9].Trim(),
+                    LanguageCode = GetNullableString(values[9]),
                     EmailAddress = emailAddress,
-                    Phone = values[11].Trim(),
-                    Phone2 = values[12].Trim(),
-                    Phone3 = values[13].Trim(),
-                    Fax = values[14].Trim(),
-                    CompanyRole = int.Parse(values[15].Trim()),
-                    Title = values[16].Trim(),
-                    CompanyNum = int.Parse(values[17].Trim())
+                    Phone = GetNullableString(values[11]),
+                    Phone2 = GetNullableString(values[12]),
+                    Phone3 = GetNullableString(values[13]),
+                    Fax = GetNullableString(values[14]),
+                    CompanyRole = GetNullableInt(values[15]),
+                    Title = GetNullableString(values[16]),
+                    CompanyNum = companyNum
                 };
 
                 // Display the parsed user (UserNum shows actual value in update mode, TBD in dry run mode)
@@ -355,6 +384,11 @@ static void UpdateContactsVision(string? inputFile, string? connectionString, st
         Console.WriteLine("Input file is not configured.");
         return;
     }
+    if (!File.Exists(inputFile))
+    {
+        Console.WriteLine($"Input file not found: {inputFile}");
+        return;
+    }
     if (string.IsNullOrEmpty(connectionString))
     {
         Console.WriteLine("Connection string is not configured.");
@@ -446,28 +480,37 @@ static void UpdateContactsVision(string? inputFile, string? connectionString, st
                     }
                 }
 
+                // Validate CompanyNum is a valid integer > 0
+                if (!int.TryParse(values[17].Trim(), out int companyNum) || companyNum <= 0)
+                {
+                    var invalidCompanyNumMessage = $"Line {lineNumber}: Skipped - CompanyNum '{values[17].Trim()}' must be a valid integer greater than 0";
+                    Console.WriteLine(invalidCompanyNumMessage);
+                    logWriter.WriteLine(invalidCompanyNumMessage);
+                    continue;
+                }
+
                 // Parse values into VisionUserModel
                 var user = new VisionUserModel
                 {
                     //SubscriberID = int.Parse(values[0].Trim()),
                     SubscriberID = 8000,
                     UserNum = userNum,
-                    UserRoleID = int.Parse(values[2].Trim()),
-                    FirstName = values[3].Trim(),
-                    MiddleInitial = values[4].Trim(),
-                    LastName = values[5].Trim(),
-                    Generation = values[6].Trim(),
-                    Salutation = values[7].Trim(),
+                    UserRoleID = GetNullableInt(values[2]),
+                    FirstName = GetNullableString(values[3]),
+                    MiddleInitial = GetNullableString(values[4]),
+                    LastName = GetNullableString(values[5]),
+                    Generation = GetNullableString(values[6]),
+                    Salutation = GetNullableString(values[7]),
                     Birthdate = values[8].IsNullOrEmpty() ? null : DateTime.Parse(values[8].Trim()),
-                    LanguageCode = values[9].Trim(),
+                    LanguageCode = GetNullableString(values[9]),
                     EmailAddress = emailAddress,
-                    Phone = values[11].Trim(),
-                    Phone2 = values[12].Trim(),
-                    Phone3 = values[13].Trim(),
-                    Fax = values[14].Trim(),
-                    CompanyRole = int.Parse(values[15].Trim()),
-                    Title = values[16].Trim(),
-                    CompanyNum = int.Parse(values[17].Trim())
+                    Phone = GetNullableString(values[11]),
+                    Phone2 = GetNullableString(values[12]),
+                    Phone3 = GetNullableString(values[13]),
+                    Fax = GetNullableString(values[14]),
+                    CompanyRole = GetNullableInt(values[15]),
+                    Title = GetNullableString(values[16]),
+                    CompanyNum = companyNum
                 };
 
                 // Check if ID exists in database
