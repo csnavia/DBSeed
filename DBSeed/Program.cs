@@ -238,7 +238,8 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
                                   Fax, 
                                   CompanyRole, 
                                   Title,
-                                  CompanyNum
+                                  CompanyNum,
+                                  Active
                                 )
                                 VALUES 
                                 (
@@ -260,7 +261,8 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
                                   @Fax, 
                                   @CompanyRole, 
                                   @Title,
-                                  @CompanyNum
+                                  @CompanyNum,
+                                  @Active
                                 )
                                 """,
                                 connection,
@@ -284,6 +286,7 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
                             insertCommand.Parameters.AddWithValue("@CompanyRole", user.CompanyRole);
                             insertCommand.Parameters.AddWithValue("@Title", user.Title);
                             insertCommand.Parameters.AddWithValue("@CompanyNum", user.CompanyNum);
+                            insertCommand.Parameters.AddWithValue("@Active", 1);
 
                             var rowsAffected = insertCommand.ExecuteNonQuery();
 
@@ -548,8 +551,9 @@ static void UpdateContactsVision(string? inputFile, string? connectionString, st
                               Fax = @Fax,
                               CompanyRole = @CompanyRole,
                               Title = @Title,
-                              CompanyNum = @CompanyNum
-                            WHERE 
+                              CompanyNum = @CompanyNum,
+                              Active = @Active
+                            WHERE
                               SubscriberID = @SubscriberID AND 
                               UserNum = @UserNum                          
                             """,
@@ -573,6 +577,7 @@ static void UpdateContactsVision(string? inputFile, string? connectionString, st
                         updateCommand.Parameters.AddWithValue("@CompanyRole", user.CompanyRole);
                         updateCommand.Parameters.AddWithValue("@Title", user.Title);
                         updateCommand.Parameters.AddWithValue("@CompanyNum", user.CompanyNum);
+                        updateCommand.Parameters.AddWithValue("@Active", 1);
 
                         var rowsAffected = updateCommand.ExecuteNonQuery();
                         var updateMessage = $"   --> UserNum {user.UserNum} updated successfully. Rows affected: {rowsAffected}";
