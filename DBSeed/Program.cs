@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
@@ -453,7 +454,8 @@ static void UpdateContactsVision(string? inputFile, string? connectionString, st
                     LastName = values[5].Trim(),
                     Generation = values[6].Trim(),
                     Salutation = values[7].Trim(),
-                    Birthdate = DateTime.Parse(values[8].Trim()),
+                    //Birthdate = DateTime.Parse(values[8]?.Trim()),
+                    Birthdate = values[8].IsNullOrEmpty() ? null : DateTime.Parse(values[8].Trim()),
                     LanguageCode = values[9].Trim(),
                     EmailAddress = emailAddress,
                     Phone = values[11].Trim(),
@@ -597,22 +599,22 @@ public struct VisionUserModel
 {
     public int SubscriberID { get; set; }
     public int UserNum { get; set; }
-    public int UserRoleID { get; set; }
-    public string FirstName { get; set; }
-    public string MiddleInitial { get; set; }
-    public string LastName { get; set; }
-    public string Generation { get; set; }
-    public string Salutation { get; set; }
-    public DateTime Birthdate { get; set; }
-    public string LanguageCode { get; set; }
-    public string EmailAddress { get; set; }
-    public string Phone { get; set; }
-    public string Phone2 { get; set; }
-    public string Phone3 { get; set; }
-    public string Fax { get; set; }
+    public int? UserRoleID { get; set; }
+    public string? FirstName { get; set; }
+    public string? MiddleInitial { get; set; }
+    public string? LastName { get; set; }
+    public string? Generation { get; set; }
+    public string? Salutation { get; set; }
+    public DateTime? Birthdate { get; set; }
+    public string? LanguageCode { get; set; }
+    public string? EmailAddress { get; set; }
+    public string? Phone { get; set; }
+    public string? Phone2 { get; set; }
+    public string? Phone3 { get; set; }
+    public string? Fax { get; set; }
     //public string SSN { get; set; }
-    public int CompanyRole { get; set; }
-    public string Title { get; set; }
+    public int? CompanyRole { get; set; }
+    public string? Title { get; set; }
     public int CompanyNum { get; set; }
 }
 
