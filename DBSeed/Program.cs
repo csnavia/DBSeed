@@ -316,7 +316,7 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
                             insertCommand.Parameters.AddWithValue("@Title", (object?)user.Title ?? DBNull.Value);
                             insertCommand.Parameters.AddWithValue("@CompanyNum", user.CompanyNum);
                             insertCommand.Parameters.AddWithValue("@Active", 1);
-                            insertCommand.Parameters.AddWithValue("@WorkAddressGUID", workAddressGUID);
+                            insertCommand.Parameters.AddWithValue("@WorkAddressGUID", (object?)workAddressGUID ?? DBNull.Value);
 
                             var rowsAffected = insertCommand.ExecuteNonQuery();
 
