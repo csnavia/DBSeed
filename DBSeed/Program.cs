@@ -189,9 +189,9 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
                 }
 
                 // Validate CompanyNum is a valid integer > 0
-                if (!int.TryParse(values[17].Trim(), out int companyNum) || companyNum <= 0)
+                if (!int.TryParse(values[31].Trim(), out int companyNum) || companyNum <= 0)
                 {
-                    var invalidCompanyNumMessage = $"Line {lineNumber}: Skipped - CompanyNum '{values[17].Trim()}' must be a valid integer greater than 0";
+                    var invalidCompanyNumMessage = $"Line {lineNumber}: Skipped - CompanyNum '{values[31].Trim()}' must be a valid integer greater than 0";
                     Console.WriteLine(invalidCompanyNumMessage);
                     logWriter.WriteLine(invalidCompanyNumMessage);
                     continue;
@@ -237,21 +237,21 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
                 {
                     SubscriberID = 8000,
                     UserNum = userNum,  // Set from sequence if performUpdate is true, otherwise 0
-                    UserRoleID = GetNullableInt(values[2]),
-                    FirstName = GetNullableString(values[3]),
-                    MiddleInitial = GetNullableString(values[4]),
-                    LastName = GetNullableString(values[5]),
-                    Generation = GetNullableString(values[6]),
-                    Salutation = GetNullableString(values[7]),
-                    Birthdate = values[8].IsNullOrEmpty() ? null : DateTime.Parse(values[8].Trim()),
-                    LanguageCode = GetNullableString(values[9]),
+                    UserRoleID = GetNullableInt(values[24]),
+                    FirstName = GetNullableString(values[8]),
+                    MiddleInitial = GetNullableString(values[25]),
+                    LastName = GetNullableString(values[9]),
+                    //Generation = GetNullableString(values[6]),
+                    Salutation = GetNullableString(values[26]),
+                    Birthdate = values[27].IsNullOrEmpty() ? null : DateTime.Parse(values[27].Trim()),
+                    LanguageCode = GetNullableString(values[28]),
                     EmailAddress = emailAddress,
                     Phone = GetNullableString(values[11]),
                     Phone2 = GetNullableString(values[12]),
-                    Phone3 = GetNullableString(values[13]),
-                    Fax = GetNullableString(values[14]),
-                    CompanyRole = GetNullableInt(values[15]),
-                    Title = GetNullableString(values[16]),
+                    Phone3 = GetNullableString(values[29]),
+                    Fax = GetNullableString(values[30]),
+                    //CompanyRole = GetNullableInt(values[15]),
+                    //Title = GetNullableString(values[16]),
                     CompanyNum = companyNum
                 };
 
@@ -289,7 +289,6 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
                                   FirstName, 
                                   MiddleInitial, 
                                   LastName, 
-                                  Generation, 
                                   Salutation, 
                                   Birthdate, 
                                   LanguageCode, 
@@ -298,8 +297,6 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
                                   Phone2, 
                                   Phone3, 
                                   Fax, 
-                                  CompanyRole, 
-                                  Title,
                                   CompanyNum,
                                   Active,
                                   WorkAddressGUID
@@ -313,7 +310,6 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
                                   @FirstName, 
                                   @MiddleInitial, 
                                   @LastName, 
-                                  @Generation, 
                                   @Salutation, 
                                   @Birthdate, 
                                   @LanguageCode, 
@@ -322,8 +318,6 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
                                   @Phone2, 
                                   @Phone3, 
                                   @Fax, 
-                                  @CompanyRole, 
-                                  @Title,
                                   @CompanyNum,
                                   @Active,
                                   @WorkAddressGUID
@@ -338,7 +332,7 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
                             insertCommand.Parameters.AddWithValue("@FirstName", (object?)user.FirstName ?? DBNull.Value);
                             insertCommand.Parameters.AddWithValue("@MiddleInitial", (object?)user.MiddleInitial ?? DBNull.Value);
                             insertCommand.Parameters.AddWithValue("@LastName", (object?)user.LastName ?? DBNull.Value);
-                            insertCommand.Parameters.AddWithValue("@Generation", (object?)user.Generation ?? DBNull.Value);
+                            //insertCommand.Parameters.AddWithValue("@Generation", (object?)user.Generation ?? DBNull.Value);
                             insertCommand.Parameters.AddWithValue("@Salutation", (object?)user.Salutation ?? DBNull.Value);
                             insertCommand.Parameters.AddWithValue("@Birthdate", (object?)user.Birthdate ?? DBNull.Value);
                             insertCommand.Parameters.AddWithValue("@LanguageCode", (object?)user.LanguageCode ?? DBNull.Value);
@@ -347,8 +341,8 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
                             insertCommand.Parameters.AddWithValue("@Phone2", (object?)user.Phone2 ?? DBNull.Value);
                             insertCommand.Parameters.AddWithValue("@Phone3", (object?)user.Phone3 ?? DBNull.Value);
                             insertCommand.Parameters.AddWithValue("@Fax", (object?)user.Fax ?? DBNull.Value);
-                            insertCommand.Parameters.AddWithValue("@CompanyRole", (object?)user.CompanyRole ?? DBNull.Value);
-                            insertCommand.Parameters.AddWithValue("@Title", (object?)user.Title ?? DBNull.Value);
+                            //insertCommand.Parameters.AddWithValue("@CompanyRole", (object?)user.CompanyRole ?? DBNull.Value);
+                            //insertCommand.Parameters.AddWithValue("@Title", (object?)user.Title ?? DBNull.Value);
                             insertCommand.Parameters.AddWithValue("@CompanyNum", user.CompanyNum);
                             insertCommand.Parameters.AddWithValue("@Active", 1);
                             insertCommand.Parameters.AddWithValue("@WorkAddressGUID", (object?)workAddressGUID ?? DBNull.Value);
@@ -569,7 +563,7 @@ static void UpdateContactsVision(string? inputFile, string? connectionString, st
                     LastName = GetNullableString(values[9]),
                     //Generation = GetNullableString(values[6]),
                     Salutation = GetNullableString(values[26]),
-                    Birthdate = values[8].IsNullOrEmpty() ? null : DateTime.Parse(values[27].Trim()),
+                    Birthdate = values[27].IsNullOrEmpty() ? null : DateTime.Parse(values[27].Trim()),
                     LanguageCode = GetNullableString(values[28]),
                     EmailAddress = emailAddress,
                     Phone = GetNullableString(values[11]),
