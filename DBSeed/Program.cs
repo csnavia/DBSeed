@@ -162,7 +162,7 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
                 continue;
 
             // Split the line by comma
-            var values = line.Split(',');
+            var values = line.Split(';');
 
             if (values.Length < expectedFieldCount)
             {
@@ -513,7 +513,7 @@ static void UpdateContactsVision(string? inputFile, string? connectionString, st
                 continue;
 
             // Split the line by comma
-            var values = line.Split(',');
+            var values = line.Split(';');
 
             if (values.Length < expectedFieldCount)
             {
