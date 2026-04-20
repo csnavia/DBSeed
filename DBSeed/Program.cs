@@ -13,6 +13,8 @@ var environmentSettingsFile = $"appsettings.{environment}.json";
 Console.WriteLine("Configuration Files:");
 Console.WriteLine($"  Base Directory: {baseDirectory}");
 Console.WriteLine($"  Loading: {baseSettingsFile}");
+Console.WriteLine($"  Env Settings: {environmentSettingsFile}");
+
 
 var baseSettingsPath = Path.Combine(baseDirectory, baseSettingsFile);
 if (File.Exists(baseSettingsPath))
