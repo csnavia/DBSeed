@@ -233,9 +233,9 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
                 //}
 
                 //Guid workAddressGUID = (Guid)(result ?? Guid.Empty);
-                Guid workAddressGUID = result is Guid guid ? guid :
+                Guid? workAddressGUID = result is Guid guid ? guid :
                        (result != null && result != DBNull.Value && Guid.TryParse(result.ToString(), out var parsed))
-                       ? parsed : Guid.Empty;   
+                       ? parsed : null;
 
                 // Get the next UserNum from the sequence only when actually inserting
                 int userNum = 0;
