@@ -524,7 +524,7 @@ static void UpdateContactsVision(string? inputFile, string? connectionString, st
             try
             {
                 // Validate that UserNum is a valid integer before parsing
-                if (!int.TryParse(values[1].Trim(), out int userNum))
+                if (!int.TryParse(values[3].Trim(), out int userNum))
                 {
                     var invalidUserNumMessage = $"Line {lineNumber}: Skipped - UserNum '{values[1].Trim()}' is not a valid integer";
                     Console.WriteLine(invalidUserNumMessage);
@@ -547,9 +547,9 @@ static void UpdateContactsVision(string? inputFile, string? connectionString, st
                 }
 
                 // Validate CompanyNum is a valid integer > 0
-                if (!int.TryParse(values[17].Trim(), out int companyNum) || companyNum <= 0)
+                if (!int.TryParse(values[31].Trim(), out int companyNum) || companyNum <= 0)
                 {
-                    var invalidCompanyNumMessage = $"Line {lineNumber}: Skipped - CompanyNum '{values[17].Trim()}' must be a valid integer greater than 0";
+                    var invalidCompanyNumMessage = $"Line {lineNumber}: Skipped - CompanyNum '{values[31].Trim()}' must be a valid integer greater than 0";
                     Console.WriteLine(invalidCompanyNumMessage);
                     logWriter.WriteLine(invalidCompanyNumMessage);
                     continue;
@@ -561,21 +561,21 @@ static void UpdateContactsVision(string? inputFile, string? connectionString, st
                     //SubscriberID = int.Parse(values[0].Trim()),
                     SubscriberID = 8000,
                     UserNum = userNum,
-                    UserRoleID = GetNullableInt(values[2]),
-                    FirstName = GetNullableString(values[3]),
-                    MiddleInitial = GetNullableString(values[4]),
-                    LastName = GetNullableString(values[5]),
-                    Generation = GetNullableString(values[6]),
-                    Salutation = GetNullableString(values[7]),
-                    Birthdate = values[8].IsNullOrEmpty() ? null : DateTime.Parse(values[8].Trim()),
-                    LanguageCode = GetNullableString(values[9]),
+                    UserRoleID = GetNullableInt(values[24]),
+                    FirstName = GetNullableString(values[8]),
+                    MiddleInitial = GetNullableString(values[25]),
+                    LastName = GetNullableString(values[9]),
+                    //Generation = GetNullableString(values[6]),
+                    Salutation = GetNullableString(values[26]),
+                    Birthdate = values[8].IsNullOrEmpty() ? null : DateTime.Parse(values[27].Trim()),
+                    LanguageCode = GetNullableString(values[28]),
                     EmailAddress = emailAddress,
                     Phone = GetNullableString(values[11]),
                     Phone2 = GetNullableString(values[12]),
-                    Phone3 = GetNullableString(values[13]),
-                    Fax = GetNullableString(values[14]),
-                    CompanyRole = GetNullableInt(values[15]),
-                    Title = GetNullableString(values[16]),
+                    Phone3 = GetNullableString(values[29]),
+                    Fax = GetNullableString(values[30]),
+                    CompanyRole = GetNullableInt(values[24]),
+                    //Title = GetNullableString(values[16]),
                     CompanyNum = companyNum
                 };
 
@@ -603,7 +603,6 @@ static void UpdateContactsVision(string? inputFile, string? connectionString, st
                               FirstName = @FirstName,
                               MiddleInitial = @MiddleInitial,
                               LastName = @LastName,
-                              Generation = @Generation,
                               Salutation = @Salutation,
                               Birthdate = @Birthdate,
                               LanguageCode = @LanguageCode,
@@ -613,7 +612,6 @@ static void UpdateContactsVision(string? inputFile, string? connectionString, st
                               Phone3 = @Phone3,
                               Fax = @Fax,
                               CompanyRole = @CompanyRole,
-                              Title = @Title,
                               CompanyNum = @CompanyNum,
                               Active = @Active
                             WHERE
@@ -628,7 +626,7 @@ static void UpdateContactsVision(string? inputFile, string? connectionString, st
                         updateCommand.Parameters.AddWithValue("@FirstName", (object?)user.FirstName ?? DBNull.Value);
                         updateCommand.Parameters.AddWithValue("@MiddleInitial", (object?)user.MiddleInitial ?? DBNull.Value);
                         updateCommand.Parameters.AddWithValue("@LastName", (object?)user.LastName ?? DBNull.Value);
-                        updateCommand.Parameters.AddWithValue("@Generation", (object?)user.Generation ?? DBNull.Value);
+                        //updateCommand.Parameters.AddWithValue("@Generation", (object?)user.Generation ?? DBNull.Value);
                         updateCommand.Parameters.AddWithValue("@Salutation", (object?)user.Salutation ?? DBNull.Value);
                         updateCommand.Parameters.AddWithValue("@Birthdate", (object?)user.Birthdate ?? DBNull.Value);
                         updateCommand.Parameters.AddWithValue("@LanguageCode", (object?)user.LanguageCode ?? DBNull.Value);
@@ -638,7 +636,7 @@ static void UpdateContactsVision(string? inputFile, string? connectionString, st
                         updateCommand.Parameters.AddWithValue("@Phone3", (object?)user.Phone3 ?? DBNull.Value);
                         updateCommand.Parameters.AddWithValue("@Fax", (object?)user.Fax ?? DBNull.Value);
                         updateCommand.Parameters.AddWithValue("@CompanyRole", (object?)user.CompanyRole ?? DBNull.Value);
-                        updateCommand.Parameters.AddWithValue("@Title", (object?)user.Title ?? DBNull.Value);
+                        //updateCommand.Parameters.AddWithValue("@Title", (object?)user.Title ?? DBNull.Value);
                         updateCommand.Parameters.AddWithValue("@CompanyNum", user.CompanyNum);
                         updateCommand.Parameters.AddWithValue("@Active", 1);
 
