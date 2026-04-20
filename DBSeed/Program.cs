@@ -576,7 +576,7 @@ static void UpdateContactsVision(string? inputFile, string? connectionString, st
                     Phone2 = GetNullableString(values[12]),
                     Phone3 = GetNullableString(values[29]),
                     Fax = GetNullableString(values[30]),
-                    CompanyRole = GetNullableInt(values[24]),
+                    //CompanyRole = GetNullableInt(values[24]),
                     //Title = GetNullableString(values[16]),
                     CompanyNum = companyNum
                 };
@@ -613,7 +613,6 @@ static void UpdateContactsVision(string? inputFile, string? connectionString, st
                               Phone2 = @Phone2,
                               Phone3 = @Phone3,
                               Fax = @Fax,
-                              CompanyRole = @CompanyRole,
                               CompanyNum = @CompanyNum,
                               Active = @Active
                             WHERE
@@ -637,7 +636,7 @@ static void UpdateContactsVision(string? inputFile, string? connectionString, st
                         updateCommand.Parameters.AddWithValue("@Phone2", (object?)user.Phone2 ?? DBNull.Value);
                         updateCommand.Parameters.AddWithValue("@Phone3", (object?)user.Phone3 ?? DBNull.Value);
                         updateCommand.Parameters.AddWithValue("@Fax", (object?)user.Fax ?? DBNull.Value);
-                        updateCommand.Parameters.AddWithValue("@CompanyRole", (object?)user.CompanyRole ?? DBNull.Value);
+                        //updateCommand.Parameters.AddWithValue("@CompanyRole", (object?)user.CompanyRole ?? DBNull.Value);
                         //updateCommand.Parameters.AddWithValue("@Title", (object?)user.Title ?? DBNull.Value);
                         updateCommand.Parameters.AddWithValue("@CompanyNum", user.CompanyNum);
                         updateCommand.Parameters.AddWithValue("@Active", 1);
