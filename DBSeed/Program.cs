@@ -148,6 +148,7 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
         int lineNumber = 0;
         int insertedCount = 0;
         int alreadyExistsCount = 0;
+        int skippedCount = 0;
 
         while ((line = reader.ReadLine()) != null)
         {
@@ -169,6 +170,7 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
                 var skipMessage = $"Line {lineNumber}: Skipped - Invalid format (expected {expectedFieldCount} values, got {values.Length})";
                 Console.WriteLine(skipMessage);
                 logWriter.WriteLine(skipMessage);
+                skippedCount++;
                 continue;
             }
 
@@ -184,6 +186,7 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
                         var invalidEmailMessage = $"Line {lineNumber}: Skipped - EmailAddress '{emailAddress}' is not a valid email address";
                         Console.WriteLine(invalidEmailMessage);
                         logWriter.WriteLine(invalidEmailMessage);
+                        skippedCount ++;
                         continue;
                     }
                 }
@@ -194,6 +197,7 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
                     var invalidCompanyNumMessage = $"Line {lineNumber}: Skipped - CompanyNum '{values[31].Trim()}' must be a valid integer greater than 0";
                     Console.WriteLine(invalidCompanyNumMessage);
                     logWriter.WriteLine(invalidCompanyNumMessage);
+                    skippedCount ++ ;
                     continue;
                 }
 
@@ -220,6 +224,7 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
                     var noAddressMessage = $"Line {lineNumber}: Skipped - AddressGUID not found for CompanyNum '{companyNum}' with AddressClass 'MAIL'";
                     Console.WriteLine(noAddressMessage);
                     logWriter.WriteLine(noAddressMessage);
+                    skippedCount ++;
                     continue;
                 }
                 Guid workAddressGUID = (Guid)result;
@@ -404,12 +409,14 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
         var summary1 = "Summary:";
         var summary2 = $"  Total records {(performUpdate ? "inserted" : "that would be inserted")}: {insertedCount}";
         var summary3 = $"  Total records that already exist: {alreadyExistsCount}";
+        var summary4 = $"  Total records skipped due to errors: {skippedCount}";
 
         // Write to console
         Console.WriteLine(separator);
         Console.WriteLine(summary1);
         Console.WriteLine(summary2);
         Console.WriteLine(summary3);
+        Console.WriteLine(summary4);
         Console.WriteLine(separator);
 
         // Write to log file
@@ -417,6 +424,7 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
         logWriter.WriteLine(summary1);
         logWriter.WriteLine(summary2);
         logWriter.WriteLine(summary3);
+        logWriter.WriteLine(summary4);
         logWriter.WriteLine(separator);
         logWriter.WriteLine(); // Add blank line for readability between runs
     }
