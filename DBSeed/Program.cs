@@ -204,30 +204,38 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
                 // Retrieve AddressGUID from dbo.tAddress (required for all records)
                 var addressCommand = new SqlCommand(
                     """
-                      SELECT 
+                      SELECT TOP 1
                         AddressGUID 
                       FROM 
                         dbo.tAddress 
                       WHERE 
                         SubscriberID = @SubscriberID AND 
-                        CompanyNum = @CompanyNum AND 
-                        AddressClass = @AddressClass                    
+                        CompanyNum = @CompanyNum 
+                      ORDER BY
+                        CASE
+                          WHEN AddressClass = 'MAIL' THEN 1
+                          WHEN AddressClass = 'HOME' THEN 2
+                          ELSE 3
+                        END
                     """,
                     connection);
                 addressCommand.Parameters.AddWithValue("@SubscriberID", 8000);
                 addressCommand.Parameters.AddWithValue("@CompanyNum", companyNum);
-                addressCommand.Parameters.AddWithValue("@AddressClass", "MAIL");
 
                 var result = addressCommand.ExecuteScalar();
-                if (result == null || result == DBNull.Value)
-                {
-                    var noAddressMessage = $"Line {lineNumber}: Skipped - AddressGUID not found for CompanyNum '{companyNum}' with AddressClass 'MAIL'";
-                    Console.WriteLine(noAddressMessage);
-                    logWriter.WriteLine(noAddressMessage);
-                    skippedCount ++;
-                    continue;
-                }
-                Guid workAddressGUID = (Guid)result;
+                //if (result == null || result == DBNull.Value)
+                //{
+                //    var noAddressMessage = $"Line {lineNumber}: Skipped - AddressGUID not found for CompanyNum '{companyNum}'";
+                //    Console.WriteLine(noAddressMessage);
+                //    logWriter.WriteLine(noAddressMessage);
+                //    skippedCount ++;
+                //    continue;
+                //}
+
+                //Guid workAddressGUID = (Guid)(result ?? Guid.Empty);
+                Guid workAddressGUID = result is Guid guid ? guid :
+                       (result != null && result != DBNull.Value && Guid.TryParse(result.ToString(), out var parsed))
+                       ? parsed : Guid.Empty;   
 
                 // Get the next UserNum from the sequence only when actually inserting
                 int userNum = 0;
