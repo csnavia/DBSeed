@@ -4,11 +4,43 @@ using Microsoft.IdentityModel.Tokens;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
+// Determine environment
+var environment = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? "Production";
+var baseDirectory = Directory.GetCurrentDirectory();
+var baseSettingsFile = "appsettings.json";
+var environmentSettingsFile = $"appsettings.{environment}.json";
+
+Console.WriteLine("Configuration Files:");
+Console.WriteLine($"  Base Directory: {baseDirectory}");
+Console.WriteLine($"  Loading: {baseSettingsFile}");
+
+var baseSettingsPath = Path.Combine(baseDirectory, baseSettingsFile);
+if (File.Exists(baseSettingsPath))
+{
+    Console.WriteLine($"    ✓ Found: {baseSettingsFile}");
+}
+else
+{
+    Console.WriteLine($"    ✗ NOT FOUND: {baseSettingsFile}");
+}
+
+Console.WriteLine($"  Loading: {environmentSettingsFile}");
+var environmentSettingsPath = Path.Combine(baseDirectory, environmentSettingsFile);
+if (File.Exists(environmentSettingsPath))
+{
+    Console.WriteLine($"    ✓ Found: {environmentSettingsFile}");
+}
+else
+{
+    Console.WriteLine($"    - Not found (optional): {environmentSettingsFile}");
+}
+Console.WriteLine();
+
 // Build configuration
 var configuration = new ConfigurationBuilder()
-    .SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-    .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? "Production"}.json", optional: true, reloadOnChange: true)
+    .SetBasePath(baseDirectory)
+    .AddJsonFile(baseSettingsFile, optional: false, reloadOnChange: true)
+    .AddJsonFile(environmentSettingsFile, optional: true, reloadOnChange: true)
     .AddEnvironmentVariables()
     .Build();
 
@@ -26,12 +58,13 @@ var createContactLog = configuration["CreateContactLog"];
 var updateContactLog = configuration["UpdateContactLog"];
 //var logFile = configuration["LogFile"];
 
-Console.WriteLine($"Environment: {Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? "Production"}");
-Console.WriteLine($"Environment Label: {environmentLabel}");        
-Console.WriteLine($"Source Connection: {sourceConnection}");
-Console.WriteLine($"Destination Connection: {destinationConnection}");
-Console.WriteLine($"Update Database: {performUpdate}");
-//Console.WriteLine($"Log File: {logFile}");
+Console.WriteLine("Application Settings:");
+Console.WriteLine($"  Environment: {environment}");
+Console.WriteLine($"  Environment Label: {environmentLabel}");        
+Console.WriteLine($"  Source Connection: {sourceConnection}");
+Console.WriteLine($"  Destination Connection: {destinationConnection}");
+Console.WriteLine($"  Update Database: {performUpdate}");
+//Console.WriteLine($"  Log File: {logFile}");
 Console.WriteLine();
 
 
