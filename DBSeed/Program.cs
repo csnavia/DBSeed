@@ -48,11 +48,9 @@ var configuration = new ConfigurationBuilder()
 
 // Read connection strings
 var sourceConnection = configuration.GetConnectionString("SourceConnection");
-var destinationConnection = configuration.GetConnectionString("DestinationConnection");
 var environmentLabel = configuration["EnvironmentLabel"];
 var createInputFile = configuration["CreateInputFile"];
 var updateInputFile = configuration["UpdateInputFile"];
-var performUpdate = bool.Parse(configuration["UpdateDatabase"] ?? "false");
 var createStartLine = int.Parse(configuration["CreateStartLine"] ?? "1");
 var updateStartLine = int.Parse(configuration["UpdateStartLine"] ?? "1");
 
@@ -64,7 +62,6 @@ Console.WriteLine("Application Settings:");
 Console.WriteLine($"  Environment: {environment}");
 Console.WriteLine($"  Environment Label: {environmentLabel}");        
 Console.WriteLine($"  Source Connection: {sourceConnection}");
-Console.WriteLine($"  Destination Connection: {destinationConnection}");
 //Console.WriteLine($"  Log File: {logFile}");
 Console.WriteLine();
 
