@@ -50,31 +50,28 @@ var baseDirectory = Directory.GetCurrentDirectory();
 var baseSettingsFile = "appsettings.json";
 var environmentSettingsFile = $"appsettings.{environment}.json";
 
-Console.WriteLine("Configuration Files:");
-Console.WriteLine($"  Base Directory: {baseDirectory}");
-Console.WriteLine($"  Loading: {baseSettingsFile}");
-Console.WriteLine($"  Env Settings: {environmentSettingsFile}");
-
+Console.WriteLine($"Environment: {environment}");
+Console.WriteLine($"Base Directory: {baseDirectory}");
+Console.WriteLine();
 
 var baseSettingsPath = Path.Combine(baseDirectory, baseSettingsFile);
 if (File.Exists(baseSettingsPath))
 {
-    Console.WriteLine($"    ✓ Found: {baseSettingsFile}");
+    Console.WriteLine($"✓ {baseSettingsFile}");
 }
 else
 {
-    Console.WriteLine($"    ✗ NOT FOUND: {baseSettingsFile}");
+    Console.WriteLine($"✗ {baseSettingsFile} (NOT FOUND)");
 }
 
-Console.WriteLine($"  Loading: {environmentSettingsFile}");
 var environmentSettingsPath = Path.Combine(baseDirectory, environmentSettingsFile);
 if (File.Exists(environmentSettingsPath))
 {
-    Console.WriteLine($"    ✓ Found: {environmentSettingsFile}");
+    Console.WriteLine($"✓ {environmentSettingsFile}");
 }
 else
 {
-    Console.WriteLine($"    - Not found (optional): {environmentSettingsFile}");
+    Console.WriteLine($"- {environmentSettingsFile} (optional - not found)");
 }
 Console.WriteLine();
 
@@ -96,13 +93,10 @@ var updateStartLine = int.Parse(configuration["UpdateStartLine"] ?? "1");
 
 var createContactLog = configuration["CreateContactLog"];
 var updateContactLog = configuration["UpdateContactLog"];
-//var logFile = configuration["LogFile"];
 
-Console.WriteLine("Application Settings:");
-Console.WriteLine($"  Environment: {environment}");
+Console.WriteLine("Settings:");
 Console.WriteLine($"  Environment Label: {environmentLabel}");        
 Console.WriteLine($"  Source Connection: {sourceConnection}");
-//Console.WriteLine($"  Log File: {logFile}");
 Console.WriteLine();
 
 // Main menu loop
