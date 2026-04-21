@@ -4,8 +4,48 @@ using Microsoft.IdentityModel.Tokens;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
-// Determine environment
-var environment = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? "Production";
+// Parse command-line arguments
+if (args.Length == 0)
+{
+    Console.WriteLine("ERROR: Environment parameter is required.");
+    Console.WriteLine();
+    Console.WriteLine("Usage:");
+    Console.WriteLine("  DBSeed.exe <environment>");
+    Console.WriteLine();
+    Console.WriteLine("Available Environments:");
+    Console.WriteLine("  Development  - Use development database and settings");
+    Console.WriteLine("  Test         - Use test database and settings");
+    Console.WriteLine("  Staging      - Use staging database and settings");
+    Console.WriteLine("  Production   - Use production database and settings");
+    Console.WriteLine();
+    Console.WriteLine("Example:");
+    Console.WriteLine("  DBSeed.exe Development");
+    Console.WriteLine();
+    return;
+}
+
+var environment = args[0];
+var validEnvironments = new[] { "Development", "Test", "Staging", "Production" };
+
+if (!validEnvironments.Contains(environment, StringComparer.OrdinalIgnoreCase))
+{
+    Console.WriteLine($"ERROR: Invalid environment '{environment}'.");
+    Console.WriteLine();
+    Console.WriteLine("Valid environments are:");
+    foreach (var env in validEnvironments)
+    {
+        Console.WriteLine($"  - {env}");
+    }
+    Console.WriteLine();
+    Console.WriteLine("Example:");
+    Console.WriteLine("  DBSeed.exe Development");
+    Console.WriteLine();
+    return;
+}
+
+// Normalize environment name to match file naming convention
+environment = validEnvironments.First(e => e.Equals(environment, StringComparison.OrdinalIgnoreCase));
+
 var baseDirectory = Directory.GetCurrentDirectory();
 var baseSettingsFile = "appsettings.json";
 var environmentSettingsFile = $"appsettings.{environment}.json";

@@ -2,9 +2,7 @@
   "profiles": {
     "DBSeed": {
       "commandName": "Project",
-      "environmentVariables": {
-        "DOTNET_ENVIRONMENT": "Development"
-      }
+      "commandLineArgs": "Development"
     },
     "Test": {
       "commandName": "Project",
