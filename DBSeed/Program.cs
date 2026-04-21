@@ -65,17 +65,95 @@ Console.WriteLine($"  Environment: {environment}");
 Console.WriteLine($"  Environment Label: {environmentLabel}");        
 Console.WriteLine($"  Source Connection: {sourceConnection}");
 Console.WriteLine($"  Destination Connection: {destinationConnection}");
-Console.WriteLine($"  Update Database: {performUpdate}");
 //Console.WriteLine($"  Log File: {logFile}");
 Console.WriteLine();
 
+// Main menu loop
+bool continueRunning = true;
+while (continueRunning)
+{
+    Console.WriteLine("=".PadRight(70, '='));
+    Console.WriteLine("DATABASE SEED MENU");
+    Console.WriteLine("=".PadRight(70, '='));
+    Console.WriteLine();
+    Console.WriteLine("  [C] Create Contacts (DRY RUN - No changes)");
+    Console.WriteLine("  [U] Update Contacts (DRY RUN - No changes)");
+    Console.WriteLine();
+    Console.WriteLine("  [X] Create Contacts (LIVE - Will insert records)");
+    Console.WriteLine("  [Y] Update Contacts (LIVE - Will update records)");
+    Console.WriteLine();
+    Console.WriteLine("  [Q] Quit");
+    Console.WriteLine();
+    Console.Write("Select an option: ");
 
+    var input = Console.ReadLine()?.Trim().ToUpper();
+    Console.WriteLine();
 
-UpdateContactsVision(updateInputFile, sourceConnection, updateContactLog, updateStartLine, performUpdate: performUpdate);
+    switch (input)
+    {
+        case "C":
+            Console.WriteLine("*** Running CREATE in DRY RUN mode ***");
+            Console.WriteLine();
+            CreateContactsVision(createInputFile, sourceConnection, createContactLog, createStartLine, performUpdate: false);
+            break;
 
-//CreateContactsVision(createInputFile, sourceConnection, createContactLog, createStartLine, performUpdate: performUpdate);
+        case "U":
+            Console.WriteLine("*** Running UPDATE in DRY RUN mode ***");
+            Console.WriteLine();
+            UpdateContactsVision(updateInputFile, sourceConnection, updateContactLog, updateStartLine, performUpdate: false);
+            break;
 
-Console.ReadKey();
+        case "X":
+            Console.WriteLine("*** WARNING: Running CREATE in LIVE mode - Records WILL be inserted ***");
+            Console.Write("Are you sure? (Y/N): ");
+            var confirmCreate = Console.ReadLine()?.Trim().ToUpper();
+            if (confirmCreate == "Y")
+            {
+                Console.WriteLine();
+                CreateContactsVision(createInputFile, sourceConnection, createContactLog, createStartLine, performUpdate: true);
+            }
+            else
+            {
+                Console.WriteLine("Operation cancelled.");
+            }
+            break;
+
+        case "Y":
+            Console.WriteLine("*** WARNING: Running UPDATE in LIVE mode - Records WILL be updated ***");
+            Console.Write("Are you sure? (Y/N): ");
+            var confirmUpdate = Console.ReadLine()?.Trim().ToUpper();
+            if (confirmUpdate == "Y")
+            {
+                Console.WriteLine();
+                UpdateContactsVision(updateInputFile, sourceConnection, updateContactLog, updateStartLine, performUpdate: true);
+            }
+            else
+            {
+                Console.WriteLine("Operation cancelled.");
+            }
+            break;
+
+        case "Q":
+            Console.WriteLine("Exiting...");
+            continueRunning = false;
+            break;
+
+        default:
+            Console.WriteLine("Invalid option. Please try again.");
+            break;
+    }
+
+    if (continueRunning)
+    {
+        Console.WriteLine();
+        Console.WriteLine("Press any key to return to menu...");
+        Console.ReadKey();
+        Console.Clear();
+    }
+}
+
+Console.WriteLine();
+Console.WriteLine("Thank you. Goodbye!");
 
 // Helper method to convert empty strings to null
 static string? GetNullableString(string value)
