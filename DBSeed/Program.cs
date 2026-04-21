@@ -57,21 +57,21 @@ Console.WriteLine();
 var baseSettingsPath = Path.Combine(baseDirectory, baseSettingsFile);
 if (File.Exists(baseSettingsPath))
 {
-    Console.WriteLine($"✓ {baseSettingsFile}");
+    Console.WriteLine($"Base Settings File: {baseSettingsFile}");
 }
 else
 {
-    Console.WriteLine($"✗ {baseSettingsFile} (NOT FOUND)");
+    Console.WriteLine($"Base Settings File: {baseSettingsFile} (NOT FOUND)");
 }
 
 var environmentSettingsPath = Path.Combine(baseDirectory, environmentSettingsFile);
-if (File.Exists(environmentSettingsPath))
+if (File.Exists(environmentSettingsPath))   
 {
-    Console.WriteLine($"✓ {environmentSettingsFile}");
+    Console.WriteLine($"Env. Settings File: {environmentSettingsFile}");
 }
 else
 {
-    Console.WriteLine($"- {environmentSettingsFile} (optional - not found)");
+    Console.WriteLine($"Env. Settings File: {environmentSettingsFile} (optional - not found)");   
 }
 Console.WriteLine();
 
