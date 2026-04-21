@@ -2,7 +2,7 @@
   "profiles": {
     "DBSeed": {
       "commandName": "Project",
-      "commandLineArgs": "test"
+      "commandLineArgs": "Development"
     },
     "Test": {
       "commandName": "Project",
