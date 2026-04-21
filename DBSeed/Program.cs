@@ -240,8 +240,8 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
 
         var modeMessage = performUpdate ? "INSERT MODE - Records will be created" : "DRY RUN MODE - No records will be created";
         var header1 = $"Reading users from {inputFile}: ({modeMessage})";
-        var separator = "".PadRight(130, '-');
-        var header2 = $"{"ID",-10} {"FirstName",-25} {"LastName",-25} {"Age",-5} {"Email",-30} {"Exists",-10}";
+        var separator = "".PadRight(120, '-');
+        var header2 = $"{"ID",-10} {"UserNum",-10} {"FirstName",-25} {"LastName",-25} {"Email",-30}";
 
         // Write to console
         Console.WriteLine(header1);
@@ -385,7 +385,7 @@ static void CreateContactsVision(string? inputFile, string? connectionString, st
 
                 // Display the parsed user (UserNum shows actual value in update mode, TBD in dry run mode)
                 var userNumDisplay = performUpdate ? user.UserNum.ToString() : "TBD";
-                var userLine = $"{user.SubscriberID,-10} {userNumDisplay,-10} {user.FirstName,-25} {user.LastName,-25} {user.EmailAddress,-30} {"N/A",-10}";
+                var userLine = $"{user.SubscriberID,-10} {userNumDisplay,-10} {user.FirstName,-25} {user.LastName,-25} {user.EmailAddress,-30}";
                 Console.WriteLine(userLine);
                 logWriter.WriteLine(userLine);
 
